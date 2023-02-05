@@ -13,7 +13,7 @@ green = (0, 180, 0)
 pygame.init()
 HEIGHT, WIDTH, SIZE = 35, 30, 20
 screen = pygame.display.set_mode((HEIGHT * SIZE, WIDTH * SIZE))
-FPS = 30
+FPS = 15
 clock = pygame.time.Clock()
 background = pygame.Surface((HEIGHT * SIZE, WIDTH * SIZE))
 background.fill(black)
@@ -22,7 +22,7 @@ pygame.draw.line(background, gray_white, ((HEIGHT * SIZE) // 2, 0), ((HEIGHT * S
 # Set game
 player1 = Pong(body=[(0, 0), (0, 1), (0, 2), (0, 3), (0, 4)])
 player2 = Pong(body=[(HEIGHT - 0.5, 0), (HEIGHT - 0.5, 1), (HEIGHT - 0.5, 2), (HEIGHT - 0.5, 3), (HEIGHT - 0.5, 4)])
-ball = (30, 10)
+ball = (10, 10)
 RADIUS = 10
 EXIT = False
 
@@ -79,15 +79,22 @@ while True:
     player1.move(WIDTH)
     player2.move(WIDTH)
 
-    # Detect collision
-    if ball[1] in [y for x, y in player1.body] or ball[1] == player1.body[-1][1] + 1:
-        print("True")
-
-    if ball[1] in [y for x, y in player2.body] or ball[1] == player2.body[-1][1] + 1:
-        print("True")
 
     # Move ball
     ball = (ball[0] + move[0], ball[1] + move[1])
+    #ball = (ball[0] + 1, ball[1])
+
+
+    # Detect collision
+    if ball[0] == 1 and (ball[1] in [y for x, y in player1.body] or ball[1] == player1.body[-1][1] + 1):
+        #ball = (ball[0] + 1, ball[1])
+        print("True")
+
+    if ball[0] == 34 and (ball[1] in [y for x, y in player2.body] or ball[1] == player2.body[-1][1] + 1):
+        #ball = (ball[0] - 1, ball[1])
+        print("True")
+
+
 
     # Draw ball
     pygame.draw.circle(screen, red, (ball[0] * SIZE, ball[1] * SIZE), 10, 0)
