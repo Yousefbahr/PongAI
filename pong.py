@@ -58,8 +58,8 @@ while True:
     screen.blit(background, (0, 0))
 
     # move players
-    player1.move()
-    player2.move()
+    player1.move(WIDTH)
+    player2.move(WIDTH)
 
     # Draw player1
     for i, position in enumerate(player1.body):
