@@ -1,8 +1,9 @@
 import pygame
-
+from Game import *
 # Set colors
 black = (0, 0, 0)
 white = (255, 255, 255)
+gray_white = (180, 180, 180)
 
 
 # Set screen
@@ -13,14 +14,18 @@ FPS = 30
 clock = pygame.time.Clock()
 background = pygame.Surface((HEIGHT * SIZE, WIDTH * SIZE))
 background.fill(black)
+pygame.draw.line(background, gray_white, ((HEIGHT * SIZE) // 2, 0), ((HEIGHT * SIZE) // 2, WIDTH * SIZE), 5)
 
 # Set game
-player1 = [(0, 0), (0, 1), (0, 2), (0, 3)]
+player1 = Pong(body=[(0, 0), (0, 1), (0, 2), (0, 3), (0, 4)])
+player2 = Pong(body=[(HEIGHT - 1, 0), (HEIGHT - 1, 1), (HEIGHT - 1, 2), (HEIGHT - 1, 3), (HEIGHT - 1, 4)])
+
 
 EXIT = False
 
 while True:
-    direction = (0, 0)
+    player1.direction = (0, 0)
+    player2.direction = (0, 0)
 
     if EXIT:
         break
@@ -31,24 +36,39 @@ while True:
 
     # Down
     if keys[pygame.K_s]:
-        direction = (0, 1)
+        player1.direction = (0, 1)
     # UP
     if keys[pygame.K_w]:
-        direction = (0, -1)
+        player1.direction = (0, -1)
+    # DOWN
+    if keys[pygame.K_DOWN]:
+        player2.direction = (0, 1)
+    # UP
+    if keys[pygame.K_UP]:
+        player2.direction = (0, -1)
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             EXIT = True
 
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE:
+                EXIT = True
+
     screen.blit(background, (0, 0))
 
-    # Change player1 coordinates
-    for i, coord in enumerate(player1):
-        player1[i] = (coord[0] + direction[0], coord[1] + direction[1])
+    # move players
+    player1.move()
+    player2.move()
 
     # Draw player1
-    for i, position in enumerate(player1):
+    for i, position in enumerate(player1.body):
         pygame.draw.rect(screen, white, (position[0] * SIZE, position[1] * SIZE, SIZE, SIZE))
+    # Draw player2
+    for j, pos in enumerate(player2.body):
+        pygame.draw.rect(screen, white, (pos[0] * SIZE, pos[1] * SIZE, SIZE, SIZE))
+
+    print(player1)
 
     pygame.display.flip()
 
