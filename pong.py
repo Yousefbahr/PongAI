@@ -1,10 +1,11 @@
 import pygame
 from Game import *
+
 # Set colors
 black = (0, 0, 0)
 white = (255, 255, 255)
 gray_white = (180, 180, 180)
-
+red = (255 ,0 ,0)
 
 # Set screen
 pygame.init()
@@ -19,13 +20,11 @@ pygame.draw.line(background, gray_white, ((HEIGHT * SIZE) // 2, 0), ((HEIGHT * S
 # Set game
 player1 = Pong(body=[(0, 0), (0, 1), (0, 2), (0, 3), (0, 4)])
 player2 = Pong(body=[(HEIGHT - 1, 0), (HEIGHT - 1, 1), (HEIGHT - 1, 2), (HEIGHT - 1, 3), (HEIGHT - 1, 4)])
-
+ball = (80, 20)
 
 EXIT = False
 
 while True:
-    player1.direction = (0, 0)
-    player2.direction = (0, 0)
 
     if EXIT:
         break
@@ -61,6 +60,16 @@ while True:
     player1.move(WIDTH)
     player2.move(WIDTH)
 
+    # Collision
+    if ball in player2.body:
+        ball = (ball[0] - 20,  ball[1])
+
+    # Move ball
+    ball = (ball[0] + 7, ball[1])
+
+    # Draw ball
+    pygame.draw.circle(screen, red, ball, 10, 0)
+
     # Draw player1
     for i, position in enumerate(player1.body):
         pygame.draw.rect(screen, white, (position[0] * SIZE, position[1] * SIZE, SIZE, SIZE))
@@ -69,6 +78,7 @@ while True:
         pygame.draw.rect(screen, white, (pos[0] * SIZE, pos[1] * SIZE, SIZE, SIZE))
 
     print(player1)
+    print(f"ball {ball}")
 
     pygame.display.flip()
 
