@@ -6,6 +6,8 @@ black = (0, 0, 0)
 white = (255, 255, 255)
 gray_white = (180, 180, 180)
 red = (255 ,0 ,0)
+blue = (0, 0, 255)
+green = (0, 180, 0)
 
 # Set screen
 pygame.init()
@@ -19,13 +21,13 @@ pygame.draw.line(background, gray_white, ((HEIGHT * SIZE) // 2, 0), ((HEIGHT * S
 
 # Set game
 player1 = Pong(body=[(0, 0), (0, 1), (0, 2), (0, 3), (0, 4)])
-player2 = Pong(body=[(HEIGHT - 1, 0), (HEIGHT - 1, 1), (HEIGHT - 1, 2), (HEIGHT - 1, 3), (HEIGHT - 1, 4)])
-ball = (80, 20)
-
+player2 = Pong(body=[(HEIGHT - 0.5, 0), (HEIGHT - 0.5, 1), (HEIGHT - 0.5, 2), (HEIGHT - 0.5, 3), (HEIGHT - 0.5, 4)])
+ball = (30, 10)
+RADIUS = 10
 EXIT = False
 
 while True:
-
+    move = (0, 0)
     if EXIT:
         break
 
@@ -39,6 +41,23 @@ while True:
     # UP
     if keys[pygame.K_w]:
         player1.direction = (0, -1)
+
+    # right
+    if keys[pygame.K_l]:
+        move = (1, 0)
+
+    # left
+    if keys[pygame.K_j]:
+        move = (-1, 0)
+
+    # up
+    if keys[pygame.K_i]:
+        move = (0, -1)
+    # down
+    if keys[pygame.K_k]:
+        move = (0, 1)
+
+
     # DOWN
     if keys[pygame.K_DOWN]:
         player2.direction = (0, 1)
@@ -60,25 +79,25 @@ while True:
     player1.move(WIDTH)
     player2.move(WIDTH)
 
-    # Collision
-    if ball in player2.body:
-        ball = (ball[0] - 20,  ball[1])
-
     # Move ball
-    ball = (ball[0] + 7, ball[1])
+    ball = (ball[0] + move[0], ball[1] + move[1])
+    #ball = (ball[0] + 1, ball[1])
 
     # Draw ball
-    pygame.draw.circle(screen, red, ball, 10, 0)
+    ball_rect = pygame.Rect((ball[0] * SIZE) - RADIUS, (ball[1] * SIZE) - RADIUS, RADIUS * 2, RADIUS * 2)
+    pygame.draw.rect(screen, green, ball_rect)
+    pygame.draw.circle(screen, red, (ball[0] * SIZE, ball[1] * SIZE), 10, 0)
 
     # Draw player1
     for i, position in enumerate(player1.body):
-        pygame.draw.rect(screen, white, (position[0] * SIZE, position[1] * SIZE, SIZE, SIZE))
+        pygame.draw.rect(screen, white, (position[0] * SIZE, position[1] * SIZE, 10, SIZE))
     # Draw player2
     for j, pos in enumerate(player2.body):
-        pygame.draw.rect(screen, white, (pos[0] * SIZE, pos[1] * SIZE, SIZE, SIZE))
+        pygame.draw.rect(screen, white, (pos[0] * SIZE, pos[1] * SIZE, RADIUS, 20))
 
     print(player1)
     print(f"ball {ball}")
+    print(f"player2 {player2}")
 
     pygame.display.flip()
 
