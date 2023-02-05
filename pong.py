@@ -79,25 +79,30 @@ while True:
     player1.move(WIDTH)
     player2.move(WIDTH)
 
+    # Detect collision
+    if ball[1] in [y for x, y in player1.body] or ball[1] == player1.body[-1][1] + 1:
+        print("True")
+
+    if ball[1] in [y for x, y in player2.body] or ball[1] == player2.body[-1][1] + 1:
+        print("True")
+
     # Move ball
     ball = (ball[0] + move[0], ball[1] + move[1])
-    #ball = (ball[0] + 1, ball[1])
 
     # Draw ball
-    ball_rect = pygame.Rect((ball[0] * SIZE) - RADIUS, (ball[1] * SIZE) - RADIUS, RADIUS * 2, RADIUS * 2)
-    pygame.draw.rect(screen, green, ball_rect)
     pygame.draw.circle(screen, red, (ball[0] * SIZE, ball[1] * SIZE), 10, 0)
 
     # Draw player1
     for i, position in enumerate(player1.body):
         pygame.draw.rect(screen, white, (position[0] * SIZE, position[1] * SIZE, 10, SIZE))
+
     # Draw player2
     for j, pos in enumerate(player2.body):
         pygame.draw.rect(screen, white, (pos[0] * SIZE, pos[1] * SIZE, RADIUS, 20))
 
     print(player1)
     print(f"ball {ball}")
-    print(f"player2 {player2}")
+    #print(f"player2 {player2}")
 
     pygame.display.flip()
 
