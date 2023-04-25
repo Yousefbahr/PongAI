@@ -88,8 +88,6 @@ while True:
 
     # ball = (ball[0] + moveb[0], ball[1] + moveb[1])
 
-
-
     # Get speed of ball if coliided
     try:
         vx, vy = collided(paddle1, paddle2, ball, BALL_SPEED, PADDLE_HEIGHT, MAXANGLE, HEIGHT, RADIUS)
