@@ -17,9 +17,11 @@ def collided(paddle1, paddle2, ball, ball_speed, PADDLE_HEIGHT, MAXANGLE, HEIGHT
     else return None
     paddle is a Rect object
     """
+    # Paddle1 is user's paddle
     if paddle1.top - RADIUS <= ball[1] <= paddle1.bottom + RADIUS and paddle1.left - RADIUS <= ball[0] <= paddle1.right + RADIUS:
         return get_speed(paddle1, ball, ball_speed, PADDLE_HEIGHT, MAXANGLE, HEIGHT)
 
+    # Paddle2 is ai's paddle
     if paddle2.top - RADIUS <= ball[1] <= paddle2.bottom + RADIUS and paddle2.left - RADIUS <= ball[0] <= paddle2.right + RADIUS:
         return get_speed(paddle2, ball, ball_speed, PADDLE_HEIGHT, MAXANGLE, HEIGHT)
 
@@ -41,8 +43,8 @@ def get_speed(paddle, ball, ball_speed, PADDLE_HEIGHT, MAXANGLE, HEIGHT):
     #     MAXANGLE = math.pi / 3
     #     ball_speed = 0.7
 
-    normalized = (ball[1] - (PADDLE_HEIGHT / 2 + paddle.top) ) / (PADDLE_HEIGHT / 2)
-    bounce_angle = normalized * MAXANGLE
+    normal = (ball[1] - (PADDLE_HEIGHT / 2 + paddle.top) ) / (PADDLE_HEIGHT / 2)
+    bounce_angle = normal * MAXANGLE
     vx = ball_speed * math.cos(bounce_angle)
     vy = ball_speed * math.sin(bounce_angle)
 

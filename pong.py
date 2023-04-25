@@ -1,3 +1,4 @@
+
 import pygame
 from Game import *
 import math
@@ -35,7 +36,6 @@ vx = 0.2
 vy = -0.2
 step = 5
 
-#paddle1.top = 200
 while True:
     moveb = (0, 0)
     if EXIT:
@@ -48,6 +48,7 @@ while True:
     # Down
     if keys[pygame.K_s] and paddle1.bottom < 400:
         paddle1.move_ip(0, step)
+
     # UP
     if keys[pygame.K_w] and paddle1.top > 0:
         paddle1.move_ip(0, -step)
