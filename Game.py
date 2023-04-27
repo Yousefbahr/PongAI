@@ -7,7 +7,6 @@ def border_collided(ball, width):
     return True if ball collided with top or bottom borders
     else return False
     """
-
     return ball[1] <= 28 or ball[1] >= width - 25
 
 
@@ -57,7 +56,7 @@ def get_speed(paddle, ball, ball_speed, PADDLE_HEIGHT, MAXANGLE, HEIGHT):
         MAXANGLE = math.pi / 3
         ball_speed = 0.7
 
-    normal = (ball[1] - (PADDLE_HEIGHT / 2 + paddle.top) ) / (PADDLE_HEIGHT / 2)
+    normal = (ball[1] - (PADDLE_HEIGHT / 2 + paddle.top)) / (PADDLE_HEIGHT / 2)
     bounce_angle = normal * MAXANGLE
     vx = ball_speed * math.cos(bounce_angle)
     vy = ball_speed * math.sin(bounce_angle)
@@ -68,12 +67,12 @@ def get_speed(paddle, ball, ball_speed, PADDLE_HEIGHT, MAXANGLE, HEIGHT):
     return vx, vy
 
 
-def move(paddle, paddle_height, step, ball ,time, vx, vy, width):
+def move(paddle, paddle_height, step, ball ,time, vx, vy, width, height):
     # Don't calculate trajectory when ball going other way
     if vx <= 0:
         return 0
 
-    x, y = calculate(ball, time, vx, vy, width)
+    x, y = calculate(ball, time, vx, vy, height=height, width=width)
     x, y = int(x), int(y)
 
     if paddle.top <= ball[1] <= paddle.bottom and width - 50 <= ball[0] <= width - 20:
@@ -109,13 +108,13 @@ def move(paddle, paddle_height, step, ball ,time, vx, vy, width):
         return step
 
 
-def calculate(ball, time, vx, vy, height):
+def calculate(ball, time, vx, vy, height, width):
     """
     return future coordinate of where the ball is going to be near the paddle
     """
     ball = list(ball)
     while True:
-        if border_collided(ball, height):
+        if border_collided(ball, width):
             vy = -vy
 
         posx = vx * time

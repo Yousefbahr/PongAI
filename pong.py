@@ -27,7 +27,7 @@ PADDLE_HEIGHT = 70
 paddle1 = pygame.Rect(0, 0, 10, PADDLE_HEIGHT)
 paddle2 = pygame.Rect(HEIGHT - 10, 0, 10, PADDLE_HEIGHT)
 # speed in pixels/ milliseconds
-BALL_SPEED = 0.6
+BALL_SPEED = 0.8
 ball = (HEIGHT // 2, WIDTH // 2)
 RADIUS = 10
 EXIT = False
@@ -39,6 +39,7 @@ score_ai = 0
 score_player = 0
 
 while True:
+
     if EXIT:
         break
 
@@ -94,17 +95,17 @@ while True:
     except TypeError:
         pass
 
-    ai_move = move(paddle2, PADDLE_HEIGHT, step, ball, millisec_per_frame, vx, vy, HEIGHT)
+    # Ball doesn't cross top and bottom borders
+    if border_collided(ball, WIDTH):
+        vy = -vy
+
+    ai_move = move(paddle2, PADDLE_HEIGHT, step, ball, millisec_per_frame, vx, vy, width=WIDTH, height=HEIGHT)
 
     # Not moving beyond boundaries
     if ai_move > 0 and paddle2.bottom < 400: # DOWN
         paddle2.move_ip(0, ai_move)
     elif ai_move < 0 and paddle2.top > 0: # UP
         paddle2.move_ip(0, ai_move)
-
-    # Ball doesn't cross top and bottom borders
-    if border_collided(ball, WIDTH):
-        vy = -vy
 
     # if Ball out of left or right borders
     if player_scored(ball) or ai_scored(ball, HEIGHT):
