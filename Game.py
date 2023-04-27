@@ -1,7 +1,6 @@
 import math
 import random
 
-random.seed(0)
 
 def border_collided(ball, width):
     """
@@ -10,6 +9,21 @@ def border_collided(ball, width):
     """
 
     return ball[1] <= 28 or ball[1] >= width - 25
+
+
+def ai_scored(ball, HEIGHT):
+    """
+    Update Scores
+    """
+    return ball[0] > HEIGHT + 10
+
+
+def player_scored(ball):
+    """
+    Update Scores
+    """
+    return ball[0] < -10
+
 
 def collided(paddle1, paddle2, ball, ball_speed, PADDLE_HEIGHT, MAXANGLE, HEIGHT, RADIUS):
     """
@@ -39,9 +53,9 @@ def get_speed(paddle, ball, ball_speed, PADDLE_HEIGHT, MAXANGLE, HEIGHT):
     RADIUS, int, radius of the ball
     MAXANGLE, int, maximum angle by which ball will bounce
     """
-    # if paddle.top - 10 <= ball[1] <= paddle.top + 10 or paddle.bottom - 10 <= ball[1] <= paddle.bottom + 10  :
-    #     MAXANGLE = math.pi / 3
-    #     ball_speed = 0.7
+    if paddle.top - 10 <= ball[1] <= paddle.top + 10 or paddle.bottom - 10 <= ball[1] <= paddle.bottom + 10  :
+        MAXANGLE = math.pi / 3
+        ball_speed = 0.7
 
     normal = (ball[1] - (PADDLE_HEIGHT / 2 + paddle.top) ) / (PADDLE_HEIGHT / 2)
     bounce_angle = normal * MAXANGLE
@@ -52,6 +66,7 @@ def get_speed(paddle, ball, ball_speed, PADDLE_HEIGHT, MAXANGLE, HEIGHT):
         vx = -vx
 
     return vx, vy
+
 
 def move(paddle, paddle_height, step, ball ,time, vx, vy, width):
     # Don't calculate trajectory when ball going other way

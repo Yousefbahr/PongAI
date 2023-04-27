@@ -1,4 +1,3 @@
-
 import pygame
 from Game import *
 import math
@@ -13,6 +12,7 @@ green = (0, 180, 0)
 
 # Set screen
 pygame.init()
+font = pygame.font.Font('freesansbold.ttf', 30)
 WIDTH, HEIGHT = 400, 700
 screen = pygame.display.set_mode((HEIGHT, WIDTH))
 FPS = 40
@@ -27,7 +27,7 @@ PADDLE_HEIGHT = 70
 paddle1 = pygame.Rect(0, 0, 10, PADDLE_HEIGHT)
 paddle2 = pygame.Rect(HEIGHT - 10, 0, 10, PADDLE_HEIGHT)
 # speed in pixels/ milliseconds
-BALL_SPEED = 0.8
+BALL_SPEED = 0.6
 ball = (HEIGHT // 2, WIDTH // 2)
 RADIUS = 10
 EXIT = False
@@ -35,9 +35,10 @@ MAXANGLE = (math.pi / 3)
 vx = 0.2
 vy = -0.2
 step = 5
+score_ai = 0
+score_player = 0
 
 while True:
-    moveb = (0, 0)
     if EXIT:
         break
 
@@ -52,21 +53,6 @@ while True:
     # UP
     if keys[pygame.K_w] and paddle1.top > 0:
         paddle1.move_ip(0, -step)
-
-    # right
-    if keys[pygame.K_l]:
-        moveb = (5, 0)
-
-    # left
-    if keys[pygame.K_j]:
-        moveb = (-5, 0)
-
-    # up
-    if keys[pygame.K_i]:
-        moveb = (0, -5)
-    # down
-    if keys[pygame.K_k]:
-        moveb = (0, 5)
 
     # DOWN
     if keys[pygame.K_DOWN] and paddle2.bottom < 400:
@@ -86,17 +72,27 @@ while True:
 
     screen.blit(background, (0, 0))
 
-    # ball = (ball[0] + moveb[0], ball[1] + moveb[1])
+    # Update scores
+    score_player += player_scored(ball)
+    score_ai += ai_scored(ball, HEIGHT)
 
-    # Get speed of ball if coliided
+    # Display Scores
+    score1 = font.render(f"{score_ai}", True, white)
+    score2 = font.render(f"{score_player}", True, white)
+    score_rect1 = score1.get_rect()
+    score_rect2 = score2.get_rect()
+    score_rect1.center = (300, 20)
+    score_rect2.center = (400, 20)
+    screen.blit(score1, score_rect1)
+    screen.blit(score2, score_rect2)
+
+    # Get speed of ball if collided
     try:
         vx, vy = collided(paddle1, paddle2, ball, BALL_SPEED, PADDLE_HEIGHT, MAXANGLE, HEIGHT, RADIUS)
-
 
     # Ball didn't collide
     except TypeError:
         pass
-
 
     ai_move = move(paddle2, PADDLE_HEIGHT, step, ball, millisec_per_frame, vx, vy, HEIGHT)
 
@@ -106,31 +102,18 @@ while True:
     elif ai_move < 0 and paddle2.top > 0: # UP
         paddle2.move_ip(0, ai_move)
 
-    # print(ai_move)
-    # print("paddle2 top", paddle2.top)
-    # print("paddle1 top", paddle1.top)
-    # print("paddle2 bottom", paddle2.bottom)
-    # print("paddle1 bottom",paddle2.bottom)
-    print(ball)
-
-
-
     # Ball doesn't cross top and bottom borders
     if border_collided(ball, WIDTH):
         vy = -vy
 
-
-
     # if Ball out of left or right borders
-    if ball[0] > HEIGHT + 10 or ball[0] < -10:
-        ball = (HEIGHT // 2, WIDTH // 2)
-        vx = 0.2
-        vy = -0.2
+    if player_scored(ball) or ai_scored(ball, HEIGHT):
+        ball = (HEIGHT // 2, random.randint(50, WIDTH))
+        vx = 0.2 * random.choice([1, -1])
+        vy = -0.2 * random.choice([1, -1])
 
     ball = round(ball[0] + (vx * millisec_per_frame)), round(ball[1] + (vy * millisec_per_frame))
 
-    #print("vx",vx)
-    #print("vy", vy)
     # Draw ball
     pygame.draw.circle(screen, red, (ball[0], ball[1]), RADIUS, 0)
 
