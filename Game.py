@@ -3,6 +3,7 @@ import random
 
 last_move = 0
 
+
 def border_collided(ball, width):
     """
     return True if ball collided with top or bottom borders
