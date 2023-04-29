@@ -1,6 +1,8 @@
-import pygame
-from Game import *
 import math
+
+import pygame
+
+from Game import *
 
 # Set colors
 black = (0, 0, 0)
@@ -37,15 +39,37 @@ vy = -0.2
 step = 5
 score_ai = 0
 score_player = 0
+# Track history of the impact's location
+history = {'top': [],
+           "center": [],
+           "bottom": []}
 
 while True:
-
+    moveb = (0, 0)
     if EXIT:
+        for loc in history:
+            print(loc, history[loc])
+        print(get_avg_point("top", history))
+        print(predict(history=history))
         break
 
     clock.tick(FPS)
     # Get keys pressed
     keys = pygame.key.get_pressed()
+    # right
+    if keys[pygame.K_l]:
+        moveb = (5, 0)
+
+    # left
+    if keys[pygame.K_j]:
+        moveb = (-5, 0)
+
+    # up
+    if keys[pygame.K_i]:
+        moveb = (0, -5)
+    # down
+    if keys[pygame.K_k]:
+        moveb = (0, 5)
 
     # Down
     if keys[pygame.K_s] and paddle1.bottom < WIDTH:
@@ -72,6 +96,10 @@ while True:
                 EXIT = True
 
     screen.blit(background, (0, 0))
+    print(ball)
+
+    ball = (ball[0] + moveb[0], ball[1] + moveb[1])
+
 
     # Update scores
     score_player += player_scored(ball)
@@ -87,6 +115,11 @@ while True:
     screen.blit(score1, score_rect1)
     screen.blit(score2, score_rect2)
 
+    # Track history of the collision's location of the user's paddle
+    if ball_collided_paddle(ball, RADIUS, paddle1):
+        location, point = collision_point(ball, PADDLE_HEIGHT, paddle1)
+        history[location].append(point)
+
     # Get speed of ball if collided
     try:
         vx, vy = collided(paddle1, paddle2, ball, BALL_SPEED, PADDLE_HEIGHT, MAXANGLE, HEIGHT, RADIUS)
@@ -99,7 +132,7 @@ while True:
     if border_collided(ball, WIDTH):
         vy = -vy
 
-    ai_move = move(paddle2, PADDLE_HEIGHT, step, ball, millisec_per_frame, vx, vy, width=WIDTH, height=HEIGHT)
+    ai_move = move(paddle2, PADDLE_HEIGHT, step, ball, millisec_per_frame, vx, vy, width=WIDTH, height=HEIGHT, history=history)
 
     # Not moving beyond boundaries
     if ai_move > 0 and paddle2.bottom < WIDTH: # DOWN
@@ -113,7 +146,7 @@ while True:
         vx = 0.2 * random.choice([1, -1])
         vy = -0.2 * random.choice([1, -1])
 
-    ball = round(ball[0] + (vx * millisec_per_frame)), round(ball[1] + (vy * millisec_per_frame))
+    # ball = round(ball[0] + (vx * millisec_per_frame)), round(ball[1] + (vy * millisec_per_frame))
 
     # Draw ball
     pygame.draw.circle(screen, red, (ball[0], ball[1]), RADIUS, 0)

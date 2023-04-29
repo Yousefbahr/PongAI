@@ -24,6 +24,48 @@ def player_scored(ball):
     return ball[0] < -10
 
 
+def collision_point(ball, PADDLE_HEIGHT, paddle):
+    """
+    return location of collision either: top ,bottom , or center
+    and location point (the point where the ball touched the paddle ,where 0 is the center of the paddle)
+    """
+    location_point = (ball[1] - (PADDLE_HEIGHT / 2 + paddle.top)) / (PADDLE_HEIGHT / 2)
+    if location_point <= -0.2:
+        return "top", location_point
+    elif -0.2 <= location_point < 0.2:
+        return "center", location_point
+    else:
+        return "bottom", location_point
+
+
+def get_avg_point(location, history):
+    """
+    return avg number of points where ball touched the paddle on that
+    'location' --> either 'top', 'bottom', or 'center'
+    """
+    return sum(history[location]) / len(history[location])
+
+
+def predict(history):
+    """
+    return location of impact based on history
+    """
+    total = len(history["top"]) + len(history["bottom"]) + len(history["center"])
+    top = (len(history["top"]) / total) * 100
+    center = (len(history["center"]) / total) * 100
+    bottom = (len(history["bottom"]) / total) * 100
+    return random.choices(["top","center", "bottom"], weights=(top, center,bottom), k=1)[0]
+
+
+def ball_collided_paddle(ball, RADIUS, paddle):
+    """
+    return True if ball collided with paddle
+    else return false
+    """
+    return paddle.top - RADIUS <= ball[1] <= paddle.bottom + RADIUS \
+        and paddle.left - RADIUS <= ball[0] <= paddle.right + RADIUS
+
+
 def collided(paddle1, paddle2, ball, ball_speed, PADDLE_HEIGHT, MAXANGLE, HEIGHT, RADIUS):
     """
     Check if ball colided with either paddles, if True return the speed of ball,
@@ -31,11 +73,11 @@ def collided(paddle1, paddle2, ball, ball_speed, PADDLE_HEIGHT, MAXANGLE, HEIGHT
     paddle is a Rect object
     """
     # Paddle1 is user's paddle
-    if paddle1.top - RADIUS <= ball[1] <= paddle1.bottom + RADIUS and paddle1.left - RADIUS <= ball[0] <= paddle1.right + RADIUS:
+    if ball_collided_paddle(ball, RADIUS, paddle1):
         return get_speed(paddle1, ball, ball_speed, PADDLE_HEIGHT, MAXANGLE, HEIGHT)
 
     # Paddle2 is ai's paddle
-    if paddle2.top - RADIUS <= ball[1] <= paddle2.bottom + RADIUS and paddle2.left - RADIUS <= ball[0] <= paddle2.right + RADIUS:
+    if ball_collided_paddle(ball, RADIUS, paddle2):
         return get_speed(paddle2, ball, ball_speed, PADDLE_HEIGHT, MAXANGLE, HEIGHT)
 
     return None
@@ -52,9 +94,9 @@ def get_speed(paddle, ball, ball_speed, PADDLE_HEIGHT, MAXANGLE, HEIGHT):
     RADIUS, int, radius of the ball
     MAXANGLE, int, maximum angle by which ball will bounce
     """
-    if paddle.top - 10 <= ball[1] <= paddle.top + 10 or paddle.bottom - 10 <= ball[1] <= paddle.bottom + 10  :
-        MAXANGLE = math.pi / 3
-        ball_speed = 0.7
+    # if paddle.top - 10 <= ball[1] <= paddle.top + 10 or paddle.bottom - 10 <= ball[1] <= paddle.bottom + 10  :
+    #     MAXANGLE = math.pi / 3
+    #     ball_speed = 0.7
 
     normal = (ball[1] - (PADDLE_HEIGHT / 2 + paddle.top)) / (PADDLE_HEIGHT / 2)
     bounce_angle = normal * MAXANGLE
@@ -67,12 +109,12 @@ def get_speed(paddle, ball, ball_speed, PADDLE_HEIGHT, MAXANGLE, HEIGHT):
     return vx, vy
 
 
-def move(paddle, paddle_height, step, ball ,time, vx, vy, width, height):
+def move(paddle, paddle_height, step, ball ,time, vx, vy, width, height, history):
     # Don't calculate trajectory when ball going other way
-    if vx <= 0:
-        return 0
+    # if vx <= 0:
+    #     return 0
 
-    x, y = calculate(ball, time, vx, vy, height=height, width=width)
+    x, y = calculate(ball, time, vx, vy, height=height, width=width, history=history)
     x, y = int(x), int(y)
 
     if paddle.top <= ball[1] <= paddle.bottom and width - 50 <= ball[0] <= width - 20:
@@ -108,22 +150,32 @@ def move(paddle, paddle_height, step, ball ,time, vx, vy, width, height):
         return step
 
 
-def calculate(ball, time, vx, vy, height, width):
+def calculate(ball, time, vx, vy, height, width, history):
     """
     return future coordinate of where the ball is going to be near the paddle
     """
     ball = list(ball)
+    # ball coming towards ai's paddle
     while True:
         if border_collided(ball, width):
             vy = -vy
 
         posx = vx * time
         posy = vy * time
-        if (height - 10 <= ball[0] <= height and posx >= 0) or (ball[0] > height):
-            return ball
+        if ((height - 10 <= ball[0] <= height and posx >= 0) or (ball[0] > height)) or ball[0] <= 20:
+            print("hi")
+            break
 
         ball[0] += round(posx)
         ball[1] += round(posy)
+    # towards ai
+    if vx >= 0:
+        return ball
+    else:
+        location = predict(history)
+        point = get_avg_point(location, history)
+        # CONTINUE HERE
+        # ToDO: GET SPEED OF BALL WHEN HIT BY USER AND PREDICT WHERE IT WILL IMPACT
 
 
 
