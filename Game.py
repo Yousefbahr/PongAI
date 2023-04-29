@@ -161,7 +161,7 @@ def calculate(ball, time, vx, vy, height, width, history, paddle, RADIUS, max_an
     """
     global last_move
     ball = list(ball)
-    # ball coming towards AI's paddle
+    # Track ball's trajectory to know its impact's location on AI's paddle
     while True:
         if border_collided(ball, width):
             vy = -vy
