@@ -43,7 +43,6 @@ history = {'top': [],
            "bottom": []}
 
 while True:
-    moveb = (0, 0)
     if EXIT:
         break
 
@@ -76,7 +75,6 @@ while True:
                 EXIT = True
 
     screen.blit(background, (0, 0))
-
 
     # Update scores
     score_player += player_scored(ball)

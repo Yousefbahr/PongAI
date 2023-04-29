@@ -155,6 +155,8 @@ def move(paddle, paddle_height, step, ball ,time, vx, vy, width, height, history
 def calculate(ball, time, vx, vy, height, width, history, paddle, RADIUS, max_angle, ball_speed):
     """
     return future coordinate of where the ball is going to be near the paddle
+    calculate a round trip of the ball from AI's paddle
+    predict how user will play
     """
     global last_move
     ball = list(ball)
@@ -171,7 +173,7 @@ def calculate(ball, time, vx, vy, height, width, history, paddle, RADIUS, max_an
 
         ball[0] += round(posx)
         ball[1] += round(posy)
-    # towards ai
+    # towards AI's paddle
     if vx >= 0:
         return ball
     # Track ball's trajectory to know its impact's location on user's paddle
@@ -191,7 +193,6 @@ def calculate(ball, time, vx, vy, height, width, history, paddle, RADIUS, max_an
 
             # Predict user's impact location, and track ball's trajectory as it returns to AI's paddle
             location = predict(history)
-            print(location)
             point = get_avg_point(location, history)
             bounce_angle = point * max_angle
             vx = ball_speed * math.cos(bounce_angle)
