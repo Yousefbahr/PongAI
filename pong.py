@@ -1,5 +1,3 @@
-import math
-
 import pygame
 
 from Game import *
@@ -39,9 +37,13 @@ vy = -0.2
 step = 5
 score_ai = 0
 score_player = 0
+# Track history of the ball's collision location on user's paddle
+history = {'top': [],
+           "center": [],
+           "bottom": []}
 
 while True:
-
+    moveb = (0, 0)
     if EXIT:
         break
 
@@ -75,6 +77,7 @@ while True:
 
     screen.blit(background, (0, 0))
 
+
     # Update scores
     score_player += player_scored(ball)
     score_ai += ai_scored(ball, HEIGHT)
@@ -89,6 +92,11 @@ while True:
     screen.blit(score1, score_rect1)
     screen.blit(score2, score_rect2)
 
+    # Track history of the collision's location of the user's paddle
+    if ball_collided_paddle(ball, RADIUS, paddle1):
+        location, point = collision_point(ball, PADDLE_HEIGHT, paddle1)
+        history[location].append(point)
+
     # Get speed of ball if collided
     try:
         vx, vy = collided(paddle1, paddle2, ball, BALL_SPEED, PADDLE_HEIGHT, MAXANGLE, HEIGHT, RADIUS)
@@ -101,7 +109,8 @@ while True:
     if border_collided(ball, WIDTH):
         vy = -vy
 
-    ai_move = move(paddle2, PADDLE_HEIGHT, step, ball, millisec_per_frame, vx, vy, width=WIDTH, height=HEIGHT)
+    ai_move = move(paddle2, PADDLE_HEIGHT, step, ball, millisec_per_frame, vx, vy, width=WIDTH,
+                   height=HEIGHT, history=history,RADIUS=RADIUS, MAXANGLE=MAXANGLE, ball_speed=BALL_SPEED)
 
     # Not moving beyond boundaries
     if ai_move > 0 and paddle2.bottom < WIDTH: # DOWN
@@ -111,7 +120,7 @@ while True:
 
     # if Ball out of left or right borders
     if player_scored(ball) or ai_scored(ball, HEIGHT):
-        ball = (HEIGHT // 2, random.randint(50, WIDTH))
+        ball = (HEIGHT // 2, random.randint(70, WIDTH))
         vx = 0.2 * random.choice([1, -1])
         vy = -0.2 * random.choice([1, -1])
 
@@ -125,12 +134,6 @@ while True:
     pygame.draw.rect(screen, white, paddle2)
 
     pygame.display.flip()
-
-
-
-
-
-
 
 
 
