@@ -13,7 +13,7 @@ green = (0, 180, 0)
 # Set screen
 pygame.init()
 font = pygame.font.Font('freesansbold.ttf', 30)
-WIDTH, HEIGHT = 400, 700
+WIDTH, HEIGHT = 700, 1000
 screen = pygame.display.set_mode((HEIGHT, WIDTH))
 FPS = 40
 millisec_per_frame = (1 / (FPS / 1000))
@@ -27,14 +27,14 @@ PADDLE_HEIGHT = 70
 paddle1 = pygame.Rect(0, 0, 10, PADDLE_HEIGHT)
 paddle2 = pygame.Rect(HEIGHT - 10, 0, 10, PADDLE_HEIGHT)
 # speed in pixels/ milliseconds
-BALL_SPEED = 0.6
+BALL_SPEED = 0.7
 ball = (HEIGHT // 2, WIDTH // 2)
 RADIUS = 10
 EXIT = False
 MAXANGLE = (math.pi / 3)
 vx = 0.2
 vy = -0.2
-step = 5
+step = 8
 score_ai = 0
 score_player = 0
 # Track history of the ball's collision location on user's paddle
