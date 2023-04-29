@@ -48,7 +48,7 @@ while True:
     keys = pygame.key.get_pressed()
 
     # Down
-    if keys[pygame.K_s] and paddle1.bottom < 400:
+    if keys[pygame.K_s] and paddle1.bottom < WIDTH:
         paddle1.move_ip(0, step)
 
     # UP
@@ -56,7 +56,7 @@ while True:
         paddle1.move_ip(0, -step)
 
     # DOWN
-    if keys[pygame.K_DOWN] and paddle2.bottom < 400:
+    if keys[pygame.K_DOWN] and paddle2.bottom < WIDTH:
         paddle2.move_ip(0, step)
 
     # UP
@@ -82,8 +82,8 @@ while True:
     score2 = font.render(f"{score_player}", True, white)
     score_rect1 = score1.get_rect()
     score_rect2 = score2.get_rect()
-    score_rect1.center = (300, 20)
-    score_rect2.center = (400, 20)
+    score_rect1.center = ((HEIGHT // 2) - 50, 20)
+    score_rect2.center = ((HEIGHT // 2) + 50, 20)
     screen.blit(score1, score_rect1)
     screen.blit(score2, score_rect2)
 
@@ -102,7 +102,7 @@ while True:
     ai_move = move(paddle2, PADDLE_HEIGHT, step, ball, millisec_per_frame, vx, vy, width=WIDTH, height=HEIGHT)
 
     # Not moving beyond boundaries
-    if ai_move > 0 and paddle2.bottom < 400: # DOWN
+    if ai_move > 0 and paddle2.bottom < WIDTH: # DOWN
         paddle2.move_ip(0, ai_move)
     elif ai_move < 0 and paddle2.top > 0: # UP
         paddle2.move_ip(0, ai_move)
