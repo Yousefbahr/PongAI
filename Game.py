@@ -1,6 +1,7 @@
 import math
 import random
 
+last_move = 0
 
 def border_collided(ball, width):
     """
@@ -43,14 +44,14 @@ def get_avg_point(location, history):
     return avg number of points where ball touched the paddle on that
     'location' --> either 'top', 'bottom', or 'center'
     """
-    return sum(history[location]) / len(history[location])
+    return sum(history[location]) / (len(history[location]) + 1)
 
 
 def predict(history):
     """
     return location of impact based on history
     """
-    total = len(history["top"]) + len(history["bottom"]) + len(history["center"])
+    total = len(history["top"]) + len(history["bottom"]) + len(history["center"]) + 1
     top = (len(history["top"]) / total) * 100
     center = (len(history["center"]) / total) * 100
     bottom = (len(history["bottom"]) / total) * 100
@@ -109,12 +110,13 @@ def get_speed(paddle, ball, ball_speed, PADDLE_HEIGHT, MAXANGLE, HEIGHT):
     return vx, vy
 
 
-def move(paddle, paddle_height, step, ball ,time, vx, vy, width, height, history):
-    # Don't calculate trajectory when ball going other way
-    # if vx <= 0:
-    #     return 0
+def move(paddle, paddle_height, step, ball ,time, vx, vy, width, height, history, RADIUS, MAXANGLE, ball_speed):
+    """
+    return movement of AI's paddle
+     """
 
-    x, y = calculate(ball, time, vx, vy, height=height, width=width, history=history)
+    x, y = calculate(ball, time, vx, vy, height=height, width=width, history=history,
+                     paddle=paddle,RADIUS=RADIUS, max_angle=MAXANGLE, ball_speed=ball_speed)
     x, y = int(x), int(y)
 
     if paddle.top <= ball[1] <= paddle.bottom and width - 50 <= ball[0] <= width - 20:
@@ -150,32 +152,64 @@ def move(paddle, paddle_height, step, ball ,time, vx, vy, width, height, history
         return step
 
 
-def calculate(ball, time, vx, vy, height, width, history):
+def calculate(ball, time, vx, vy, height, width, history, paddle, RADIUS, max_angle, ball_speed):
     """
     return future coordinate of where the ball is going to be near the paddle
     """
+    global last_move
     ball = list(ball)
-    # ball coming towards ai's paddle
+    # ball coming towards AI's paddle
     while True:
         if border_collided(ball, width):
             vy = -vy
 
+        if (height - 20 <= ball[0] <= height or (ball[0] > height)) or ball[0] <= 20:
+            break
+
         posx = vx * time
         posy = vy * time
-        if ((height - 10 <= ball[0] <= height and posx >= 0) or (ball[0] > height)) or ball[0] <= 20:
-            print("hi")
-            break
 
         ball[0] += round(posx)
         ball[1] += round(posy)
     # towards ai
     if vx >= 0:
         return ball
+    # Track ball's trajectory to know its impact's location on user's paddle
     else:
-        location = predict(history)
-        point = get_avg_point(location, history)
-        # CONTINUE HERE
-        # ToDO: GET SPEED OF BALL WHEN HIT BY USER AND PREDICT WHERE IT WILL IMPACT
+        if ball_collided_paddle(ball, RADIUS, paddle):
+            while True:
+                if border_collided(ball, width):
+                    vy = -vy
+
+                posx = vx * time
+                posy = vy * time
+                if ball[0] <= 20:
+                    break
+
+                ball[0] += round(posx)
+                ball[1] += round(posy)
+
+            # Predict user's impact location, and track ball's trajectory as it returns to AI's paddle
+            location = predict(history)
+            print(location)
+            point = get_avg_point(location, history)
+            bounce_angle = point * max_angle
+            vx = ball_speed * math.cos(bounce_angle)
+            vy = ball_speed * math.sin(bounce_angle)
+            while True:
+                if border_collided(ball, width):
+                    vy = -vy
+
+                posx = vx * time
+                posy = vy * time
+                if height - 20 <= ball[0] <= height or (ball[0] > height):
+                    last_move = ball
+                    return ball
+
+                ball[0] += round(posx)
+                ball[1] += round(posy)
+        else:
+            return last_move
 
 
 
