@@ -1,6 +1,8 @@
-import pygame
-from Game import *
 import math
+
+import pygame
+
+from Game import *
 
 # Set colors
 black = (0, 0, 0)
@@ -27,7 +29,7 @@ PADDLE_HEIGHT = 70
 paddle1 = pygame.Rect(0, 0, 10, PADDLE_HEIGHT)
 paddle2 = pygame.Rect(HEIGHT - 10, 0, 10, PADDLE_HEIGHT)
 # speed in pixels/ milliseconds
-BALL_SPEED = 0.8
+BALL_SPEED = 0.6
 ball = (HEIGHT // 2, WIDTH // 2)
 RADIUS = 10
 EXIT = False

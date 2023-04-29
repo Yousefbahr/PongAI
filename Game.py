@@ -124,9 +124,3 @@ def calculate(ball, time, vx, vy, height, width):
 
         ball[0] += round(posx)
         ball[1] += round(posy)
-
-
-
-
-
-
